@@ -1,0 +1,87 @@
+{% extends "layout.html" %}
+{% block content %}
+
+{% if hero and not g_ativo %}
+<!-- HERO SECTION -->
+<div class="relative h-[80vh] w-full overflow-hidden mb-12">
+    <img src="{{ hero.backdrop }}" class="absolute w-full h-full object-cover opacity-30 blur-sm scale-105">
+    <div class="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/40 to-transparent"></div>
+    
+    <div class="relative max-w-7xl mx-auto h-full flex items-center px-8">
+        <div class="flex flex-col md:flex-row gap-12 items-center">
+            <img src="{{ hero.imagem }}" class="w-64 rounded-[2.5rem] shadow-[0_0_50px_rgba(0,0,0,0.8)] border border-white/10 hidden md:block">
+            <div class="max-w-2xl text-center md:text-left">
+                <span class="bg-red-600 text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest">Destaque Nexus</span>
+                <h1 class="text-6xl md:text-8xl font-black tracking-tighter mt-4 mb-6 leading-none">{{ hero.titulo }}</h1>
+                <p class="text-gray-400 text-lg line-clamp-3 mb-8 font-light italic">"{{ hero.descricao }}"</p>
+                <div class="flex gap-4 justify-center md:justify-start">
+                    <a href="/filme/{{ hero.id }}" class="bg-white text-black px-8 py-4 rounded-2xl font-black uppercase text-xs hover:bg-red-600 hover:text-white transition shadow-xl">Ver Detalhes</a>
+                    <button onclick="toggleWatchlist('{{ hero.id }}')" class="bg-white/10 backdrop-blur-md text-white border border-white/10 px-8 py-4 rounded-2xl font-black uppercase text-xs hover:bg-white/20 transition">
+                        + Minha Lista
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="max-w-7xl mx-auto px-8 py-12">
+    <h2 class="text-xs font-black uppercase tracking-[0.4em] text-gray-600 mb-10 border-b border-white/5 pb-4">
+        {% if g_ativo %} Gênero: {{ g_ativo }} {% else %} Catálogo Completo {% endif %}
+    </h2>
+
+    <!-- GRID DINÂMICO -->
+    <div id="movie-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+        <!-- JS Preenche aqui -->
+    </div>
+
+    <!-- LOADER -->
+    <div id="loader" class="py-20 text-center text-red-600 font-black animate-pulse text-[10px] tracking-[0.5em]">
+        SINCRONIZANDO COM O NEXUS...
+    </div>
+</div>
+
+<script>
+    let page = 1;
+    let loading = false;
+    let temMais = true;
+    const gAtivo = "{{ g_ativo or '' }}";
+
+    async function carregar() {
+        if (loading || !temMais) return;
+        loading = true;
+        
+        const res = await fetch(`/api/filmes_paginados?page=${page}&genero=${gAtivo}`);
+        const data = await res.json();
+        
+        const grid = document.getElementById('movie-grid');
+        data.filmes.forEach(f => {
+            const isFav = JSON.parse(localStorage.getItem('watchlist') || '[]').includes(f.id);
+            grid.innerHTML += `
+                <div class="group relative animate-in fade-in zoom-in duration-700">
+                    <a href="/filme/${f.id}">
+                        <div class="overflow-hidden rounded-[1.5rem] aspect-[2/3] border border-white/5 transition-all group-hover:border-red-600 shadow-2xl">
+                            <img src="${f.imagem}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700 opacity-90 group-hover:opacity-100">
+                            <div class="absolute top-3 right-3 bg-black/80 px-2 py-1 rounded text-[10px] font-black border border-white/10">⭐ ${f.nota}</div>
+                        </div>
+                    </a>
+                    <button onclick="toggleWatchlist('${f.id}')" class="absolute top-3 left-3 p-2 rounded-full backdrop-blur-md border border-white/10 transition hover:scale-110 ${isFav ? 'bg-red-600 text-white' : 'bg-black/50 text-white opacity-0 group-hover:opacity-100'}">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3.22l-.61-.6a5.5 5.5 0 00-7.78 7.77L10 18.78l8.39-8.4a5.5 5.5 0 00-7.78-7.77l-.61.61z"/></svg>
+                    </button>
+                    <h3 class="mt-4 font-bold text-xs truncate text-gray-300 group-hover:text-red-500 transition">${f.titulo}</h3>
+                </div>`;
+        });
+
+        temMais = data.tem_mais;
+        if(!temMais) document.getElementById('loader').classList.add('hidden');
+        page++;
+        loading = false;
+    }
+
+    window.onscroll = () => {
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 800) carregar();
+    };
+    carregar();
+</script>
+{% endblock %}

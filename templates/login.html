@@ -1,0 +1,13 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-md mx-auto py-32 px-6">
+    <div class="bg-zinc-900 p-8 rounded-3xl border border-white/10 shadow-2xl text-center">
+        <h2 class="text-2xl font-black mb-6">Painel Administrativo</h2>
+        <form method="POST">
+            <input type="password" name="password" placeholder="Senha Secreta" 
+                class="w-full bg-black/50 border border-white/10 rounded-full py-3 px-6 mb-4 focus:border-red-600 outline-none transition">
+            <button class="w-full bg-red-600 py-3 rounded-full font-bold hover:bg-red-700 transition">Entrar</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

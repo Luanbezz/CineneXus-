@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- Fundo Imersivo -->
+<div class="fixed inset-0 -z-20 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/60 via-[#050505] to-[#050505]"></div>
+    <div class="w-full h-full bg-zinc-900 opacity-20"></div>
+</div>
+
+<div class="max-w-7xl mx-auto py-16 px-8">
+    <a href="javascript:history.back()" class="text-gray-500 hover:text-white mb-12 inline-block font-black text-[10px] uppercase tracking-widest transition">← Voltar</a>
+
+    <div class="flex flex-col md:flex-row gap-20 items-start">
+        <!-- Foto do Ator -->
+        <div class="w-full md:w-80 flex-shrink-0 md:sticky md:top-24">
+            <img src="{{ ator.foto }}" class="w-full aspect-[2/3] object-cover rounded-[2.5rem] shadow-2xl border border-white/10">
+        </div>
+        
+        <div class="flex-1">
+            <h1 class="text-6xl md:text-8xl font-black mb-8 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-zinc-600">{{ ator.nome }}</h1>
+            
+            <div class="space-y-12">
+                <div>
+                    <h3 class="text-red-600 font-black text-[10px] uppercase tracking-[0.3em] mb-4">Biografia</h3>
+                    <p class="text-gray-400 text-xl leading-relaxed font-light italic">
+                        {{ ator.bio if ator.bio else "A biografia deste artista ainda não foi sincronizada com o Nexus." }}
+                    </p>
+                </div>
+
+                <div class="pt-10 border-t border-white/5">
+                    <h3 class="text-white font-black text-[10px] uppercase tracking-[0.3em] mb-8">Filmografia no Nexus</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+                        {% for fid, f in filmes.items() %}
+                        <a href="/filme/{{ fid }}" class="group bg-white/5 p-4 rounded-2xl flex items-center gap-5 hover:bg-red-600/10 transition border border-white/5 hover:border-red-600/40">
+                            <img src="{{ f.imagem }}" class="w-14 h-20 rounded-lg object-cover shadow-lg group-hover:scale-105 transition duration-500">
+                            <div>
+                                <p class="font-bold text-white group-hover:text-red-500 transition">{{ f.titulo }}</p>
+                                <p class="text-[10px] text-gray-500 mt-1 uppercase font-black">{{ f.ano }} • ⭐ {{ f.nota }}</p>
+                            </div>
+                        </a>
+                        {% endfor %}
+                    </div>
+
+                    {% if not filmes %}
+                        <p class="text-gray-600 italic text-sm">Nenhum filme deste artista disponível no Nexus no momento.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

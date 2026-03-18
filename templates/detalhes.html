@@ -1,0 +1,56 @@
+{% extends "layout.html" %}
+{% block content %}
+
+<!-- BACKDROP DINÂMICO EM CAMADA FIXA -->
+<div class="fixed inset-0 -z-20 overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-b from-[#050505]/40 via-[#050505] to-[#050505]"></div>
+    <img src="{{ filme.backdrop }}" class="w-full h-full object-cover blur-[100px] opacity-40 scale-125 animate-pulse">
+</div>
+
+<div class="max-w-7xl mx-auto py-12 px-8 relative">
+    <a href="javascript:history.back()" class="text-gray-500 hover:text-white text-[10px] font-black uppercase tracking-widest mb-12 inline-block transition">← Voltar para a galeria</a>
+    
+    {% if filme.trailer %}
+    <div class="aspect-video w-full rounded-[3rem] overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.6)] mb-16 bg-black">
+        <iframe class="w-full h-full" src="https://www.youtube.com/embed/{{ filme.trailer }}" frameborder="0" allowfullscreen></iframe>
+    </div>
+    {% endif %}
+
+    <div class="grid md:grid-cols-4 gap-16 mb-20">
+        <div class="relative group">
+            <img src="{{ filme.imagem }}" class="rounded-[2rem] shadow-2xl border border-white/10 w-full transform group-hover:rotate-1 transition duration-500">
+        </div>
+        <div class="md:col-span-3">
+            <span class="bg-red-600 text-[10px] font-black px-4 py-1 rounded-full uppercase tracking-widest shadow-lg shadow-red-600/20">{{ filme.genero }}</span>
+            <h1 class="text-6xl md:text-8xl font-black mb-6 mt-6 tracking-tighter leading-none drop-shadow-2xl">{{ filme.titulo }}</h1>
+            <p class="text-gray-300 text-xl leading-relaxed mb-12 font-light italic max-w-3xl">"{{ filme.descricao }}"</p>
+            
+            <div class="flex flex-wrap gap-4">
+                {% for aid, ator in atores.items() %}
+                <a href="/ator/{{ aid }}" class="bg-white/5 border border-white/10 p-1 pr-6 rounded-full flex items-center gap-4 hover:bg-red-600 transition group shadow-xl">
+                    <img src="{{ ator.foto }}" class="w-12 h-12 rounded-full object-cover shadow-lg group-hover:scale-110 transition">
+                    <span class="font-bold text-sm">{{ ator.nome }}</span>
+                </a>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Nexus Engine: Relacionados -->
+    {% if relacionados %}
+    <div class="border-t border-white/5 pt-20">
+        <h3 class="text-[10px] font-black uppercase tracking-[0.4em] text-gray-600 mb-10"> Títulos Similares</h3>
+        <div class="grid grid-cols-2 md:grid-cols-6 gap-6">
+            {% for rid, rf in relacionados.items() %}
+            <a href="/filme/{{ rid }}" class="group block">
+                <div class="overflow-hidden rounded-xl aspect-[2/3] border border-white/5 group-hover:border-red-600 transition shadow-lg">
+                    <img src="{{ rf.imagem }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                </div>
+                <p class="mt-3 text-[10px] font-bold truncate text-gray-500 group-hover:text-white transition uppercase">{{ rf.titulo }}</p>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

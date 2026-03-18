@@ -1,0 +1,39 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="max-w-7xl mx-auto px-8 py-20">
+    <h1 class="text-6xl font-black italic tracking-tighter uppercase mb-16">Minha <span class="text-red-600">Lista</span></h1>
+    <div id="grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8"></div>
+    <div id="empty" class="hidden text-center py-20 text-gray-600 italic text-xl">Sua lista está vazia.</div>
+</div>
+
+<script>
+    async function carregarLista() {
+        const watchlist = JSON.parse(localStorage.getItem('watchlist') || '[]');
+        const res = await fetch('/api/filmes');
+        const filmes = await res.json();
+        const grid = document.getElementById('grid');
+        
+        const favoritados = Object.entries(filmes).filter(([id]) => watchlist.includes(id));
+        
+        if (favoritados.length === 0) {
+            document.getElementById('empty').classList.remove('hidden');
+            return;
+        }
+
+        grid.innerHTML = favoritados.map(([id, f]) => `
+            <div class="relative group">
+                <a href="/filme/${id}">
+                    <div class="overflow-hidden rounded-2xl aspect-[2/3] border border-white/5 group-hover:border-red-600 transition shadow-2xl">
+                        <img src="${f.imagem}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700">
+                    </div>
+                </a>
+                <button onclick="toggleWatchlist('${id}')" class="absolute top-3 left-3 p-2 bg-red-600 rounded-full border border-white/10 shadow-lg">
+                    <svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M10 3.22l-.61-.6a5.5 5.5 0 00-7.78 7.77L10 18.78l8.39-8.4a5.5 5.5 0 00-7.78-7.77l-.61.61z"/></svg>
+                </button>
+                <h3 class="mt-4 font-bold text-xs truncate">${f.titulo}</h3>
+            </div>
+        `).join('');
+    }
+    carregarLista();
+</script>
+{% endblock %}
