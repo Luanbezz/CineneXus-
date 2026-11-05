@@ -71,7 +71,7 @@ def ator(id):
     # Busca os filmes que esse ator participou
     filmes_at = {fid: dados['filmes'][str(fid)] for fid in ator_d["filmes_ids"] if str(fid) in dados['filmes']}
     
-    # Aqui passamos ator e filmes. O erro acontece se o ator.html procurar algo que não está aqui.
+   
     return render_template('ator.html', ator=ator_d, filmes=filmes_at)
 
 @app.route('/atores')
